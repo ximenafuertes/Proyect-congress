@@ -1,0 +1,25 @@
+@import './../../index.scss';
+
+.main-view {
+  width: 100%;
+  text-align: center;
+  display: inline-block;
+
+  &__header {
+    text-align: center;
+    color: $primary-color-blue;
+  }
+
+  &__footer {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align: center;
+    font-size: 18px;
+    color: $primary-color-blue;
+  }
+}
+
+.container-fluid {
+  display: inline-block;
+  padding-top: 10px;
+}

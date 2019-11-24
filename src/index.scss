@@ -1,0 +1,13 @@
+@import "~bootstrap/scss/bootstrap";
+
+$primary-color-blue: rgb(73, 135, 206);
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    text-align: center;
+    background-color: white;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
