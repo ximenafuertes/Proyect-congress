@@ -4,19 +4,30 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import map from 'lodash/map';
 import get from 'lodash/get';
+import filter from 'lodash/filter';
+import includes from 'lodash/includes';
 import './congressMembersList.scss';
 
 //@ Actions
 import ActionsCongressMembers from '../../actions/congressMembers';
+import congressMembers from '../../reducers/congressMembers';
 
 class CongressMembersList extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            congressMembersCache: [],
+            inputSearch: '',
+        }
     }
 
     componentDidMount() {
-        this.props.getCongressMembers();
+        this.props.getCongressMembers()
+            .then(response => {
+                const members = response;
+                this.setState({ congressMembersCache: response })
+            });
     }
 
     buildHeaderList = () => {
@@ -84,7 +95,7 @@ class CongressMembersList extends React.Component {
 //onClick={get(member, 'api_uri')}
     buildContentList = () => (
         <tbody>
-            {map(get(this.props.immCongress, 'members'), (member, index) => {
+            {map(this.state.congressMembersCache, (member, index) => {
                 return (
                     this.buildRow(member)
                 );
@@ -92,12 +103,29 @@ class CongressMembersList extends React.Component {
         </tbody>
     );
 
+    onChangeInput = (e) => {
+        const { immCongress } = this.props;
+        const searchValue = e.target.value;
+        const congressMembersSearch = filter(get(immCongress, 'members'), (member) => {
+            return filter(member, (value, key) => includes(value, searchValue)).length > 0;
+        })
+        this.setState({ congressMembersCache: congressMembersSearch });
+    }
+
     render = () => (
         <div className="congress-members-list__content">
-            <table className="table table-striped w-auto congress-members-list__table">
-                {this.buildHeaderList()}
-                {this.buildContentList()}
-            </table>
+            <div className="congress-members-list__search">
+                <div className="congress-members-list__search-text">
+                    Search
+                </div>
+                <input onChange={this.onChangeInput} className="congress-members-list__search-input" type="text" className="form-control" />
+            </div>
+            <div className="congress-members-list__table-members">
+                <table className="table table-striped w-auto congress-members-list__table">
+                    {this.buildHeaderList()}
+                    {this.buildContentList()}
+                </table>
+            </div>
         </div>
     );
 }

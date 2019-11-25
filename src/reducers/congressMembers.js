@@ -11,10 +11,6 @@ const initialState = () => ({
     success: false
 });
 
-function getCongressMembers(data) {
-    return data.results[0].members;
-};
-
 const congressMembers = (state = initialState(), action) => {
     switch (action.type) {
         case actionTypes.CONGRESS_MEMBERS_FETCH:
@@ -25,7 +21,7 @@ const congressMembers = (state = initialState(), action) => {
         case actionTypes.CONGRESS_MEMBERS_SUCCESS:
             return {
                 ...state,
-                members: getCongressMembers(action.payload),
+                members: action.payload,
                 success: true,
                 isFetching: false
             };

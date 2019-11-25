@@ -17,6 +17,10 @@ const getCongressFetch = () => ({
     type: actionTypes.CONGRESS_MEMBERS_FETCH
 });
 
+function getCongressMembers(data) {
+    return data.results[0].members;
+};
+
 const getCongress = (congress, chamber) => (dispatch) => {
     dispatch(getCongressFetch());
     /*fetch(`https://api.propublica.org/congress/v1/115/senate/members.json`, {
@@ -25,9 +29,11 @@ const getCongress = (congress, chamber) => (dispatch) => {
                 'X-API-Key': 'PROPUBLICA_API_KEY',
             },
     })*/
-    Promise.resolve(responseCongressMembers)
+    return Promise.resolve(responseCongressMembers)
         .then(response => {
-            dispatch(getCongressSuccess(response));
+            const members = getCongressMembers(response);
+            dispatch(getCongressSuccess(members));
+            return members;
         })
         .catch(error => {
             dispatch(getCongressError(error));
