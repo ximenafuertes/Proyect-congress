@@ -8,7 +8,11 @@ const initialState = () => ({
     members: [],
     isFetching: false,
     error: false,
-    success: false
+    success: false,
+    memberData: {},
+    successMember: false,
+    isFetchingMember: false,
+    errorMember: false,
 });
 
 const congressMembers = (state = initialState(), action) => {
@@ -30,6 +34,24 @@ const congressMembers = (state = initialState(), action) => {
                 ...state,
                 isFetching: false,
                 error: true
+            };
+        case actionTypes.GET_MEMBER_FETCH:
+            return {
+                ...state,
+                isFetchingMember: true
+            };
+        case actionTypes.GET_MEMBER_SUCCESS:
+            return {
+                ...state,
+                memberData: action.payload.results[0],
+                successMember: true,
+                isFetchingMember: false
+            };
+        case actionTypes.GET_MEMBER_ERROR:
+            return {
+                ...state,
+                isFetchingMember: false,
+                errorMember: true
             };
         default:
             return state;

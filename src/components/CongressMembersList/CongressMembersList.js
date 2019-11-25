@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import map from 'lodash/map';
@@ -61,6 +62,10 @@ class CongressMembersList extends React.Component {
         </div>
     )
 
+    onClickMember = (member) => {
+        this.props.getMember(get(member, 'api_uri'));
+    }
+
     buildRow = (member) => (
         <tr>
             <th>
@@ -88,13 +93,15 @@ class CongressMembersList extends React.Component {
                 {get(member, 'office')}
             </td>
             <td>
-                <button type="button" className="btn btn-outline-info">
-                    Info
-                </button>
+                <Link to="/detail">
+                    <button type="button" onClick={() => this.onClickMember(member)} className="btn btn-outline-info">
+                        Info
+                    </button>
+                </Link>
             </td>
         </tr>
     )
-//onClick={get(member, 'api_uri')}
+
     buildContentList = () => (
         <tbody>
             {map(this.state.congressMembersCache, (member, index) => {
@@ -162,13 +169,15 @@ class CongressMembersList extends React.Component {
 CongressMembersList.PropTypes = {
     immCongress: PropTypes.object,
     getCongressMembers: PropTypes.func,
+    getMember: PropTypes.func,
 }
 
 export default connect(
     state => ({
-        immCongress: state.congressMembers
+        immCongress: state.congressMembers,
     }),
     dispatch => ({
         getCongressMembers: bindActionCreators(ActionsCongressMembers.getCongress, dispatch),
+        getMember: bindActionCreators(ActionsCongressMembers.getMember, dispatch),
     })
 )(CongressMembersList);
