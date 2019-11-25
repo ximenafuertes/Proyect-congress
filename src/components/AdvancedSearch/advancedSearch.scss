@@ -1,0 +1,24 @@
+.advanced-search {
+    &__content {
+        display: flex;
+        align-self: center;
+        padding: 0 30px 30px;
+    }
+
+    &__text {
+        display: flex;
+        align-items: center;
+        padding: 0 15px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    &__options {
+        display: flex;
+        padding: 0 30px;
+
+        input {
+            margin: 0 10px !important;
+        }
+    }
+}

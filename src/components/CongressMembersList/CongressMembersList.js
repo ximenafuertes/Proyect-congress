@@ -6,6 +6,7 @@ import map from 'lodash/map';
 import get from 'lodash/get';
 import filter from 'lodash/filter';
 import includes from 'lodash/includes';
+import AdvancedSearch from '../AdvancedSearch/AdvancedSearch';
 import './congressMembersList.scss';
 
 //@ Actions
@@ -19,13 +20,14 @@ class CongressMembersList extends React.Component {
         this.state = {
             congressMembersCache: [],
             inputSearch: '',
+            isAdvancedSearchChecked: false,
         }
+        this.handleChangeAdvancedSearch = this.handleChangeAdvancedSearch.bind(this);
     }
 
     componentDidMount() {
         this.props.getCongressMembers()
             .then(response => {
-                const members = response;
                 this.setState({ congressMembersCache: response })
             });
     }
@@ -103,31 +105,58 @@ class CongressMembersList extends React.Component {
         </tbody>
     );
 
-    onChangeInput = (e) => {
+    handleChangeAdvancedSearch(checked) {
+        this.setState({ isAdvancedSearchChecked: checked });
+    }
+
+    getAdvancedSearchOption = () => {
+        const element = document.getElementById("advancedSearch");
+        return element.options[element.selectedIndex].value;
+    }
+
+    onSearch = (e) => {
         const { immCongress } = this.props;
-        const searchValue = e.target.value;
+        const searchValue = e.target.value.toLowerCase();
+        if(this.state.isAdvancedSearchChecked) {
+            const searchBy = this.getAdvancedSearchOption();
+            const congressMembersSearch = filter(get(immCongress, 'members'), (member) => {
+                const value = get(member, searchBy).toLowerCase();
+                return includes(value, searchValue);
+            })
+            this.setState({ congressMembersCache: congressMembersSearch });
+        }
+        
         const congressMembersSearch = filter(get(immCongress, 'members'), (member) => {
-            return filter(member, (value, key) => includes(value, searchValue)).length > 0;
+            return filter(member, (value, key) => includes(value.toLowerCase(), searchValue)).length > 0;
         })
         this.setState({ congressMembersCache: congressMembersSearch });
     }
 
-    render = () => (
-        <div className="congress-members-list__content">
-            <div className="congress-members-list__search">
-                <div className="congress-members-list__search-text">
-                    Search
+    render = () => {
+        return (
+            <div className="congress-members-list__content">
+                <div className="congress-members-list__search">
+                    <div className="congress-members-list__search-text">
+                        Search
+                    </div>
+                    <input onChange={this.onSearch} className="congress-members-list__search-input" type="text" className="form-control" />
                 </div>
-                <input onChange={this.onChangeInput} className="congress-members-list__search-input" type="text" className="form-control" />
+                <AdvancedSearch 
+                    immCongress={this.props.immCongress}
+                    getCongressMembers={this.props.getCongressMembers}
+                    onSearch={this.onSearch}
+                    handleChangeAdvancedSearch={this.handleChangeAdvancedSearch}
+                    isAdvancedSearchChecked={this.state.isAdvancedSearchChecked}
+                />
+                <div className="congress-members-list__table-members">
+                    <table className="table table-striped w-auto congress-members-list__table">
+                        {this.buildHeaderList()}
+                        {this.buildContentList()}
+                    </table>
+                </div>
             </div>
-            <div className="congress-members-list__table-members">
-                <table className="table table-striped w-auto congress-members-list__table">
-                    {this.buildHeaderList()}
-                    {this.buildContentList()}
-                </table>
-            </div>
-        </div>
-    );
+        )
+    };
 }
 
 CongressMembersList.PropTypes = {
